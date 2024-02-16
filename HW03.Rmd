@@ -1,0 +1,212 @@
+---
+title: "Introduction to Biomedical Data Science / Homework-3 (Week-4)"
+author: "Aysu Aydın"
+date: "February 16, 2024"
+output: 
+    html_document:
+        toc: true
+        toc_depth: 2
+        number_sections: true
+---
+
+# Work with lists
+
+Create a list object named `list1` which should contain three named items:
+
+- `my_letters`: 200 randomly sampled letters from English alphabet
+- `my_numbers`: 150 randomly sampled numbers between 123 and 456
+- `my_dataframe`: built-in data frame called `airquality`
+
+Remember to use `set.seed()` for reproducing the same random numbers
+
+```{r}
+set.seed(10)
+
+list1 <- list(my_letters = sample(letters, size = 200, replace = TRUE),
+              my_numbers = sample(123:456, size = 150, replace = TRUE),
+              my_dataframe = airquality)
+
+```
+
+Grow list by adding two more items:
+
+- `my_telomere`: A character vector which should contain *"TTAGGG"* string repeated back-to-back 1000 times. (Hint use `paste()` and `rep()` functions. `paste()` has a `collapse` argument)
+- `my_logical`: A logical vector which should have 300 `TRUE` followed by 600 `FALSE`
+
+```{r}
+list1[["my_telomere"]] <- paste(rep("TTAGGG", 1000), collapse = "")
+
+list1[["my_logical"]] <- c(rep(TRUE, 300), rep(FALSE, 600))
+
+```
+
+Show the following
+
+- 932nd letter of the `my_telomere` item (Hint: `substr` function)
+- The first 50 numbers of the `my_number` item multiplied by `pi`
+
+```{r}
+substr(list1[["my_telomere"]], start = 932, stop = 932)
+
+list1[["my_numbers"]][1:50] * pi
+
+```
+
+
+Report the length of each list item using `lapply()` function
+
+
+```{r}
+lapply(list1, length)
+
+```
+
+
+# Work with matrices
+
+Create three matrices:
+
+- `mtx1`: numbers from 1 to 100 populated by row across 10 columns
+- `mtx2`: numbers from 201 to 250 populated by column across 10 columns
+- `mtx3`: mtx2 is appended at the bottom of mtx1
+
+```{r}
+mtx1 <- matrix(1:100, ncol = 10, byrow = T)
+mtx2 <- matrix(201:250, ncol = 10, byrow = F)
+mtx3 <- rbind(mtx1, mtx2)
+
+```
+
+
+Report the following:
+
+- Column averages of `mtx1`
+- Row sums of `mtx2`
+
+```{r}
+colMeans(mtx1)
+rowSums(mtx2)
+
+```
+
+
+Derive a new matrix from mtx3:
+
+- `mtx4`: Take mtx3, log-10 transform, add 1, take square root (Hint: you can use `apply` function, or do one by one, but I would try apply if I were you) (Hint2: set `MARGIN` argument to `2` not to transform the matrix)
+
+```{r}
+mtx4 <- apply(mtx3, FUN = function(x) sqrt(log(x, base = 10)+1), MARGIN = 2)
+
+```
+
+
+Calculate the following data summaries from `mtx3` using `apply()` function:
+
+- Standard deviation per column
+- Median value per row
+- Average divided by standard deviation per column
+
+```{r}
+apply(mtx3, FUN = sd, MARGIN = 2)
+apply(mtx3, FUN = median, MARGIN = 1)
+apply(mtx3, FUN = function(x) mean(x)/sd(x), MARGIN = 2)
+
+```
+
+
+# Work with data frames
+
+Here you will use built-in `iris` data frame. It is not visible in your *Environment* on top right window, but you can type its name and it will be accessible right away. **Remember that capitalization matters in accessing data frames and their columns.**
+
+Using built-in `iris` data frame in R, do the following:
+
+- Print the first 5 rows of `iris`(hint: numeric indexing or `head()` function)
+- Try the function `View()` on `iris`
+- Show summary of the data frame `iris`
+- Show the dimensions of the data frame
+- Show the first 5 values from the column named `Sepal.Length` 
+- Show the levels of factors in the `Species` column
+- Show the value in the 3rd row and 4th column
+
+```{r}
+print(iris[1:5,])
+View(iris)
+summary(iris)
+dim(iris)
+iris$Sepal.Length[1:5]
+levels(iris$Species)
+iris[3:4]
+
+```
+
+
+- Create a new object named `df` and assign `iris` to it (use `df` for the exercises below)
+- Add a new column named `new_var` and assign random letters to this column (hint: use sample function but make sure the length of sampling matches the `df` row number)
+- Call `summary` function on a subset of `df` where `Sepal.Length` is less than 5
+- Create a new object named `df2` by bind `df` and `iris` together side by side
+- Deselect columns 7 to 12 of `df2` and reassign it back to df2 (hint: df2 <- df2[something, something])
+- Call `identical` function on `df` and `df2`. What is the result?
+
+
+```{r}
+df <- iris
+df$new_var <- sample(letters, size = nrow(df), replace = T)
+summary(iris[iris$Sepal.Length <5, ])
+df2 <- cbind(df, iris)
+df2 <- df2[, -c(7:12)]
+identical(df,df2)
+
+```
+
+
+# Create a functions that involves loops and flow control
+
+
+Create a function named `chromosome_guesser` which will help the user guess the number of chromosomes in great white sharks (the right number is 82)
+
+- The function takes a single argument named `guess`
+- If the `guess` is less than 70, it should print: `"You are waaaay too low"`
+- If the `guess` is between 71 and 81, it should print `"Just a little higher"`
+- If the `guess` is 82, it should print `"Right on point"`
+- If the `guess` is between 83 and 93, it should print `"Just a little lower"`
+- If the `guess` is greater than 93, it should print: `"You are waaaay too high"`
+
+
+```{r}
+chromose_guesser <- function(guess) {
+  if(guess < 70) {
+    print("You are waaaay too low")
+  } else if (guess >= 71 & guess <= 81) {
+      print("Just a little higher")
+  } else if(guess == 82) {
+      print("Right on point")
+  } else if (guess >= 83 & guess <= 83) {
+      print("Just a little lower")
+  } else if (guess > 93) {
+      print("You are waaaay too high")
+    }
+
+}
+
+
+```
+
+
+Create another function named `self_reassurer` using `for()` loop which will tell you nice things of your choice (ie. user-defined string) as many times as you want:
+
+- The function takes two arguments: `nice_words` and `times`
+- The function should print `nice_words` as many times as specified in `times` argument
+- If the `times` argument is greater than 5, the function should also print `"You should be proud of yourself by now"` with every iteration after 5.
+
+```{r}
+self_reassurer <- function(nice_words, times) {
+  for(i in 1:times) {
+    print(nice_words)
+   if (times > 5) {print("You should be proud of yourself by now")}
+  }
+}
+
+```
+
+
+# Install tidyverse package(s)
